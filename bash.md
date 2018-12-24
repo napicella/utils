@@ -5,5 +5,5 @@ https://www.shellcheck.net/
 https://github.com/sstephenson/bats
 ### CLI - simplified man page 
 https://github.com/tldr-pages/tldr
-### CLI - faster navigation of directories folders
+### CLI - faster navigation of directories
 https://www.linode.com/docs/tools-reference/tools/faster-file-navigation-with-autojump/
