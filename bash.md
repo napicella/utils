@@ -7,3 +7,8 @@ https://github.com/sstephenson/bats
 https://github.com/tldr-pages/tldr
 ### CLI - faster navigation of directories
 https://www.linode.com/docs/tools-reference/tools/faster-file-navigation-with-autojump/
+### Html preview in the terminal
+sudo yum install `w3m` -y  
+Quite usefull to visualize html based report, like checkstyle, etc, on a remote host
+
+
