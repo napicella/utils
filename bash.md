@@ -22,5 +22,8 @@ curl -sSL https://get.rvm.io | bash -s stable
 ```bash
 alias please="sudo $(fc -ln -1)"
 ```
+### CLI - Simplistic interactive filtering tool
+https://github.com/peco/peco
+
 
 
