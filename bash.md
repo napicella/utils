@@ -23,7 +23,12 @@ curl -sSL https://get.rvm.io | bash -s stable
 alias please="sudo $(fc -ln -1)"
 ```
 ### CLI - Simplistic interactive filtering tool
-https://github.com/peco/peco
+https://github.com/peco/peco  
+__Example:__ Search file, select it and cat it
+```bash
+find -name '*.java' | peco | xargs cat
+```
+
 
 
 
