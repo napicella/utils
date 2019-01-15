@@ -1,7 +1,6 @@
 #!/bin/bash
 
-## find the pid of the server which is listening on the specified port:
-## returns the pid of the process listening on port 8080 or nothing if none is found.
+## returns the pid of the process listening on the port specified or nothing if none is found.
 ## Usage: 
 ## > find-server-pid 8080
  
