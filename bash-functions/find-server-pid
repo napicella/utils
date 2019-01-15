@@ -1,0 +1,29 @@
+#!/bin/bash
+
+## find the pid of the server which is listening on the specified port:
+## returns the pid of the process listening on port 8080 or nothing if none is found.
+## Usage: 
+## > find-server-pid 8080
+ 
+set -e
+
+if [ $# -eq 0 ]
+  then
+    echo "No port specified"
+fi
+
+output=$(sudo ss -lptn "sport = :${1}")
+
+if [ -z "$output" ]; then
+    echo "No server found listening on port ${1}"
+    exit 0
+fi
+
+pid=$(echo $output | awk -F "pid=" '{print $2}' | awk -F "," '{print $1}')
+
+if [ -z "$pid" ]; then
+    echo "No server found listening on port ${1}"
+    exit 0
+fi
+
+echo $pid
