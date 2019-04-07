@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+
+  LambdaLabelling:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./bin
+      Handler: main
+      Runtime: go1.x
+      Timeout: 30
+      MemorySize: 128
+      ## Normally we would use SAM and Policies, but SAM does not support all the
+      ## managed policies and it does not support custom ones.
+	  ## In thic case we use AmazonRekognitionFullAccess which is not supported
+	  ## by SAM. That's why we create a role and assign the role to the Lambda.
+	  ## Note that a role assigned to a Lambda needs to always contain the 
+	  ## service-role/AWSLambdaBasicExecutionRole.
+	  ## Note also the trust policy which allows the Role to be assumed bt Lambda.
+      Role: !GetAtt LambdaLabellingRole.Arn
+      Environment:
+        Variables:
+          LABELLING_ISLOCALEXECUTION: "false"
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /label
+            Method: post
+
+  LambdaLabellingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - 'arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess'
+        - 'arn:aws:iam::aws:policy/AmazonRekognitionFullAccess'

@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+
+  LambdaLabelling:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./bin
+      Handler: main
+      Runtime: go1.x
+      Timeout: 30
+      MemorySize: 128
+      Role: !GetAtt LambdaLabellingRole.Arn
+      Environment:
+        Variables:
+          LABELLING_ISLOCALEXECUTION: "false"
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /label
+            Method: post
+
+  LambdaLabellingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - 'arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess'
+        - 'arn:aws:iam::aws:policy/AmazonRekognitionFullAccess'
+  
+  LambdaLabellingLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: [ LambdaLabelling ]
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaLabelling}
+      RetentionInDays: 7
+  
+  ## Create a Metric ErrorCount based on a log scan
+  ErrorMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName:
+        Ref: LambdaLabellingLogGroup
+      FilterPattern: '"level=error"'
+      MetricTransformations:
+      - MetricValue: 1
+        MetricNamespace:
+          Fn::Join: ['/', [LogScan, {Ref: LambdaLabelling}]]
+        MetricName: ErrorCount
+
+
+  ## Create an alarm for the metric ErrorCount
+  LambdaErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Alarm if lambda errors too high (log level=error)
+      AlarmName: !Sub ${AWS::StackName}-LogScanLambdaLabellingError
+      AlarmActions:
+        - Ref: "AlarmNotificationTopic"
+      ComparisonOperator: GreaterThanThreshold
+      EvaluationPeriods: 1
+      MetricName: ErrorCount
+      Namespace:
+        Fn::Join: ['/', [LogScan, {Ref: LambdaLabelling}]]
+      Period: 60
+      Statistic: Sum
+      Threshold: 0.0
+      TreatMissingData: notBreaching
+
+  AlarmNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+      - Endpoint: "someemail@something.com"
+        Protocol: email

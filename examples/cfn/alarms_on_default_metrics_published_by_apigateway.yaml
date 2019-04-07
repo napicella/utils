@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+## Api Gateway sends to CloudWatch some default metrics. For more information see:
+## https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html
+## Syntax of import: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html
+
+## This templates creates alarm(s) for an existing ApiGateway which exported the Api Name.
+## This templates receives an exported key, which is the ApiName of an existing Cfn Stack.
+## For example if the template which creates the Api Gateway exports the Api Name like this:
+##
+## Outputs:
+##   UsbStickApi:
+##     Description: 'The ApiName'
+##     Value: 'PresignedUrl-Prod'
+##     Export:
+##       Name: UsbStickApi
+##
+## Then you should pass as parameter:
+## ApiGatewayApiName=UsbStickApi
+
+
+Parameters:
+  ApiGatewayApiName:
+    Type: String
+    Description: Exported key for the Api Gateway ApiName to use as metric source for the alarm(s)
+
+Resources:
+  LambdaErrorAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmDescription: 'API Gateway calls'
+      Namespace: 'AWS/ApiGateway'
+      MetricName: Count
+      Dimensions:
+      - Name: ApiName
+        Value:
+          Fn::ImportValue:
+            !Sub "${ApiGatewayApiName}"
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmActions:
+        - Ref: "AlarmNotificationTopic"
+      TreatMissingData: notBreaching
+
+  AlarmNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+      - Endpoint: "some-email@gmail.com"
+        Protocol: email

@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Blueprint for API gateway with global throttling'
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: The bucket used to store usb stick files
+  StageName:
+    Type: String
+    Default: Prod
+    Description: The Lambda Function and API Gateway Stage
+
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  LambdaFunctionOverHttps:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      CodeUri: ../src/
+      Environment:
+        Variables:
+          bucket: !Ref BucketName
+      Policies:
+        - AmazonS3FullAccess
+      Events:
+        AnyRequest:
+          Type: Api
+          Properties:
+            Path: /*
+            Method: ANY
+            RestApiId:
+              Ref: UsbStickApiUrl
+
+  UsbStickApiUrl:
+      Type: AWS::Serverless::Api
+      Properties:
+      
+        ## This is the only part of the template responsible for the global throttling
+        ## for APi gateway accross all methods, resources and callers.
+        MethodSettings:
+          - ResourcePath: /*
+            HttpMethod: '*'
+            ThrottlingBurstLimit: 10
+            ThrottlingRateLimit: 1
+            
+        StageName: Prod
+        DefinitionBody:
+          swagger: 2.0
+          info:
+            ## Note, this value is going to be used by SAM as Api Name
+            title: 'PresignedUrl-Prod'
+          paths:
+            "/{proxy+}":
+              x-amazon-apigateway-any-method:
+                produces:
+                  - application/json
+                x-amazon-apigateway-integration:
+                  uri:
+                    !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionOverHttps.Arn}/invocations"
+                  passthroughBehavior: when_no_match
+                  httpMethod: POST
+                  type: aws_proxy
+
+Outputs:
+  UsbStickApiUrl:
+    Description: 'The Api Gateway Url'
+    Value: !Sub "https://${UsbStickApiUrl}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/"
+    Export:
+      Name: UsbStickApiUrl
+  UsbStickApi:
+    Description: 'The ApiName'
+    Value: 'PresignedUrl-Prod'
+    Export:
+      Name: UsbStickApi
+
+

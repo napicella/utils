@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: 'Blueprint for Aws Lambda triggered by event in a SNS topic (like the one created by an CW alarm)'
+
+Parameters:
+  TooManyRequestAlarmTopic:
+    Type: String
+
+Resources:
+  apigatewayauthorizernodejs:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      CodeUri: ./src
+      Description: 'Some description'
+      MemorySize: 256
+      Timeout: 5
+      Role: !GetAtt apigatewayauthorizernodejsRole.Arn
+      Events:
+        TooManyRequestAlarm:
+          Type: SNS
+          Properties:
+            Topic: !Sub "${TooManyRequestAlarmTopic}"
+
+
+  ## Not important for the example, leaving for sake of completeness
+  apigatewayauthorizernodejsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - 'arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator'
