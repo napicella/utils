@@ -12,11 +12,11 @@ Resources:
       MemorySize: 128
       ## Normally we would use SAM and Policies, but SAM does not support all the
       ## managed policies and it does not support custom ones.
-	  ## In thic case we use AmazonRekognitionFullAccess which is not supported
-	  ## by SAM. That's why we create a role and assign the role to the Lambda.
-	  ## Note that a role assigned to a Lambda needs to always contain the 
-	  ## service-role/AWSLambdaBasicExecutionRole.
-	  ## Note also the trust policy which allows the Role to be assumed bt Lambda.
+      ## In thic case we use AmazonRekognitionFullAccess which is not supported
+      ## by SAM. That's why we create a role and assign the role to the Lambda.
+      ## Note that a role assigned to a Lambda needs to always contain the 
+      ## service-role/AWSLambdaBasicExecutionRole.
+      ## Note also the trust policy which allows the Role to be assumed bt Lambda.
       Role: !GetAtt LambdaLabellingRole.Arn
       Environment:
         Variables:
