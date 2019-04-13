@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Markdown Api'
+
+Parameters:
+  StageName:
+    Type: String
+    Default: Prod
+    Description: The Lambda Function and API Gateway Stage
+
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  ChangeLogLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      CodeUri: ../src/
+      Environment:
+        Variables:
+          CHANGE_LOG_TABLE: !Ref ChangeLogTable
+      Policies:
+      # Give just CRUD permissions to one table
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ChangeLogTable
+      Events:
+        AnyRequest:
+          Type: Api
+          Properties:
+            Path: /*
+            Method: ANY
+            RestApiId:
+              Ref: MarkdownApi
+
+  MarkdownApi:
+    Type: AWS::Serverless::Api
+    Properties:
+
+      ## This responsible for the global throttling
+      ## for APi gateway accross all methods, resources and callers.
+      MethodSettings:
+        - ResourcePath: /*
+          HttpMethod: '*'
+          ThrottlingBurstLimit: 10
+          ThrottlingRateLimit: 10
+
+      StageName: Prod
+      DefinitionBody:
+        swagger: 2.0
+        info:
+          ## Note, this value is going to be used by SAM as Api Name
+          title: !Sub "MarkdownApi-${StageName}"
+        paths:
+          "/{proxy+}":
+            x-amazon-apigateway-any-method:
+              produces:
+                - application/json
+              x-amazon-apigateway-integration:
+                uri:
+                  !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ChangeLogLambda.Arn}/invocations"
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+
+  ChangeLogTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: title
+          AttributeType: S      # S stands for string
+        - AttributeName: date
+          AttributeType: S
+      KeySchema:
+        - AttributeName: title
+          KeyType: HASH
+        - AttributeName: date
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+Outputs:
+  UsbStickApiUrl:
+    Description: 'The Api Gateway Url'
+    Value: !Sub "https://${MarkdownApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/"
+    Export:
+      Name: MarkdownApiUrl
+  UsbStickApi:
+    Description: 'The ApiName'
+    Value: !Sub "MarkdownApi-${StageName}"
+    Export:
+      Name: MarkdownApi

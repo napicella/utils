@@ -1,0 +1,16 @@
+{
+  "name": "com.napicella.blog.api",
+  "version": "1.0.0",
+  "description": "Blog Api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-lambda-router": "^0.6.1",
+    "aws-sdk": "^2.437.0",
+    "showdown": "^1.9.0"
+  }
+}
