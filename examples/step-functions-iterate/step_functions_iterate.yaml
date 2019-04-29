@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Resources:
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "An example template with an IAM role for a Lambda state machine."
+
+Resources:
+  LambdaExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+
+  MyLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "index.handler"
+      Role: !GetAtt [ LambdaExecutionRole, Arn ]
+      Code:
+        ZipFile: |
+          exports.handler = function iterator (event, context, callback) {
+            let index = event.iterator.index
+            let step = event.iterator.step
+            let count = event.iterator.count
+
+            index += step
+
+            callback(null, {
+              index,
+              step,
+              count,
+              continue: index < count
+            })
+          };
+      Runtime: "nodejs8.10"
+      Timeout: "25"
+
+  StatesExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - !Sub states.${AWS::Region}.amazonaws.com
+            Action: "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: StatesExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: "*"
+
+  MyStateMachine:
+    Type: "AWS::StepFunctions::StateMachine"
+    Properties:
+      DefinitionString:
+        !Sub
+          - |-
+            {{stateMachine}}
+          - {lambdaIteratorArn: !GetAtt [ MyLambdaFunction, Arn ]}
+      RoleArn: !GetAtt [ StatesExecutionRole, Arn ]
