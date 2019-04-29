@@ -22,6 +22,12 @@ curl -sSL https://get.rvm.io | bash -s stable
 ```bash
 alias please="sudo $(fc -ln -1)"
 ```
+### Get the source directory of a bash script from within the script itself
+```bash
+my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+```
+It will work as long as the last component of the path used to find the script 
+is not a symlink (directory links are OK).
 ### CLI - Simplistic interactive filtering tool
 https://github.com/peco/peco  
 __Example:__ Search file, select it and cat it
