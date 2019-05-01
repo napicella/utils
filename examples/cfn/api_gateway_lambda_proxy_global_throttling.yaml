@@ -49,7 +49,7 @@ Resources:
           swagger: 2.0
           info:
             ## Note, this value is going to be used by SAM as Api Name
-            title: 'PresignedUrl-Prod'
+            title: !Sub "UsbStickApi-${StageName}"
           paths:
             "/{proxy+}":
               x-amazon-apigateway-any-method:
@@ -70,7 +70,7 @@ Outputs:
       Name: UsbStickApiUrl
   UsbStickApi:
     Description: 'The ApiName'
-    Value: 'PresignedUrl-Prod'
+    Value: !Sub "UsbStickApi-${StageName}"
     Export:
       Name: UsbStickApi
 
