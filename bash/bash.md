@@ -13,6 +13,12 @@ sudo yum install w3m -y
 w3m -dump /some/path/file.html
 ```
 Quite usefull to visualize html based report, like checkstyle, etc, on a remote host
+### pyenv
+See https://github.com/pyenv/pyenv  
+and its installer: https://github.com/pyenv/pyenv-installer
+### NVM
+See https://github.com/nvm-sh/nvm  
+Installation instructions here: https://github.com/nvm-sh/nvm#installation-and-update
 ### RVM - https://rvm.io/
 ```bash
 gpg2 --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
