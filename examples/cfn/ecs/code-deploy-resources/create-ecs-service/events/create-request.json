@@ -1,0 +1,61 @@
+{
+    "RequestType": "Delete",
+    "ResponseURL": "http://pre-signed-S3-url-for-response",
+    "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/MyStack/guid",
+    "RequestId": "unique id for this create request",
+    "ResourceType": "Custom::TestResource",
+    "LogicalResourceId": "MyTestResource",
+    "PhysicalResourceID": "sdfkasfkashkfd",
+    "oResourceProperties": {
+	"StackName": "MyStack",
+	"DesiredCount": "2",
+	"ServiceName": "custom-bg-uin-service-local-c",
+	"Cluster": "balman-cnm",
+	"LaunchType": "EXTERNAL",
+	"DeploymentConfiguration": {
+	    "MaximumPercent": "200",
+	    "MinimumHealthyPercent": "75"
+	}
+    },
+    "ResourceProperties": {
+	"StackName": "MyStack",
+	"ClientToken" : "laksdfjsld",
+	"ServiceName": "custom-bg-service",
+	"Cluster": "balman-cluster",
+	"DesiredCount": "2",
+	"LaunchType": "FARGATE",
+	"DeploymentConfiguration": {
+	    "MaximumPercent": "200",
+	    "MinimumHealthyPercent": "75"
+	},
+	"DeploymentController": {
+	    "Type": "CODE_DEPLOY"
+	},
+	"NetworkConfiguration": {
+	    "AwsvpcConfiguration": {
+		"AssignPublicIp": "DISABLED",
+		"SecurityGroups": [
+		    "sg-0f427fce0116sdsdse9e"
+		],
+		"Subnets": [
+		    "subnet-0ac993c799csdsdfeba",
+		    "subnet-0224f3ed45sfdd2c6"
+		]
+	    }
+	},
+	"TaskDefinition": "config-api",
+	"LoadBalancers": [
+	    {
+		"ContainerName": "config-api",
+		"ContainerPort": "3000",
+		"TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/balma-Targe-HTL4BHVMZHZA/0019a9406f761f1d"
+	    }
+	],
+	"ServiceRegistries": [
+	    {
+		"Port": "3000",
+		"RegistryArn": "arn:aws:servicediscovery:us-east-1:123456789012:service/srv-lha6p5apv7y2to3k"
+	    }
+	]
+    }
+}

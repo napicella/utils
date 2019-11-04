@@ -1,0 +1,64 @@
+#+DATE: Wed Sep 11 19:53:35 +0545 2019
+
+* Custom::BlueGreenECSService
+  The Custom::BlueGreenECSService resource creates Amazon Elastic Container Service (Amazon ECS) service that supports the BlueGreen CODE_DEPLOY Controller which is not supported by default in the Cloudformation.
+
+*** Properties
+    Everything is same as that of Default AWS::ECS::Service https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html with one flag addition
+    - *DeploymentController*
+      Required: Yes (If not required please use the default one)
+      Allowed Value: ECS(default) | CODE_DEPLOY | EXTERNAL
+      Type: DeploymentController where DeploymentController is
+      #+BEGIN_SRC yaml
+      DeploymentController:
+        Type: TypeOfController
+      #+END_SRC
+    - *ServiceToken*
+      Required: Yes
+      Allowed Values: Arn of the Custom ECS Service provider Lambda
+      Type: Arn
+
+*** Caveats
+    - Replacement Updates is not supported. When needed Stack should be deleted and created with the desired properties.
+    - *DeploymentConfiguration* and *DesiredCount* are the only things that can be updated, which is AWS constraint. [[https://docs.aws.amazon.com/sdk-for-go/api/service/ecs/#ECS.UpdateService][For Details]]
+
+*** Return Values
+    - ~!Ref <Logical-ID>~ will return the ARN of the blue green service
+    - ~!GetAtt <Logical-ID.Name>~ will return the Name of the service
+
+*** Example
+    #+BEGIN_SRC yaml
+    Type: Custom::BlueGreenService
+    DependsOn:
+      - CreateBGServiceLambda
+    Properties:
+      ServiceToken: arn:aws:lambda:us-east-1:123456789012:function:blue-green-ecs-service-provi-CreateBGServiceLambda-127CDSL6PYRJ0
+      ClientToken: random-text-to-make-request-idempotent
+      ServiceName: !Sub ${AWS::StackName}-service
+      ## Cloudformation doesn't support configuring DeploymentController. Only because of this we had to create custom resource
+      DeploymentController:
+        Type: 'CODE_DEPLOY'
+      Cluster: 'blue-green-cluster'
+      LaunchType: FARGATE
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 75
+      DesiredCount: 2
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          ## Needs to put security groups in array form
+          SecurityGroups:
+            - sg-0f427fce01167de9e23f
+          Subnets:
+            - subnet-0224f3ed459c9234d2c6
+            - subnet-0ac993c799c24346eba
+      TaskDefinition: bg-service-task
+      ServiceRegistries:
+        - RegistryArn: arn:aws:servicediscovery:us-east-1:1234567:service/srv-lh246p5apv7y2to3k
+          Port: 3000
+      LoadBalancers:
+        - ContainerName: bg-service-task
+          ContainerPort: 3000
+          TargetGroupArn: arn:aws:elasticloadbalancing:us-east-1:1234567:targetgroup/Targe-HTL4BHVMZHZA/0019a9406f761f1d
+    #+END_SRC

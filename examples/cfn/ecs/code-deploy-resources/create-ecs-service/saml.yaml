@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Creates BlueGreen ecs service which is not supported by cloudformation by default as of now
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: balman
+
+Resources:
+  CreateBGServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: "sts:AssumeRole"
+            Principal:
+              Service: lambda.amazonaws.com
+      Policies:
+        - PolicyName: !Sub ${AWS::StackName}-service-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:CreateService
+                  - ecs:DeleteService
+                  - ecs:UpdateService
+                  - ecs:DescribeServices
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource: "*"
+
+  CreateBGServiceLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 900
+      CodeUri: src/
+      Handler: main
+      Runtime: go1.x
+      Role: !GetAtt CreateBGServiceRole.Arn
+
+Outputs:
+  CreateBGServiceLambdaArn:
+    Description: Arn of the custom ECS service lambda
+    Value: !GetAtt CreateBGServiceLambda.Arn
+    Export:
+      Name: !Join [':', [!Ref EnvironmentName, 'CreateBGServiceLambdaArn']]

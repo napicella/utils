@@ -1,0 +1,54 @@
+#+DATE: Wed Sep 11 19:53:35 +0545 2019
+
+* Custom::BlueGreenDeploymentGroup
+  The Custom::BlueGreenDeploymentGroup resource creates AWS ECS CodeDeploy Deployment Group. Deployment Group specifies the ECS service, cluster, target groups, listeners, deployment configurations
+
+*** Properties
+    Details here [[https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codedeploy-deploymentgroup.html][CFN DOCS]], [[https://docs.aws.amazon.com/codedeploy/latest/APIReference/API_CreateDeploymentGroup.html][API DOCS]], 
+    - *ServiceToken*
+      Required: Yes
+      Allowed Values: Arn of the Custom Resource provider Lambda
+      Type: Arn
+
+*** Caveats
+    - Replacement Updates is not supported. When needed Stack should be deleted and created again
+
+*** Return Values
+    - ~!Ref <Logical-ID>~  returns the name of the deployment group
+
+*** Example
+    #+BEGIN_SRC yaml
+    Type: Custom::DeploymentGroup
+    Properties:
+      ServiceToken: !GetAtt CreateBGServiceLambda.Arn
+      ClientToken: laksdfjsld
+      ApplicationName: osho-codeploy-app
+      DeploymentGroupName: osho-codeploy-app-deployment-group
+      DeploymentStyle:
+        DeploymentType: BLUE_GREEN
+        DeploymentOption: WITH_TRAFFIC_CONTROL
+      EcsServices:
+        - ClusterName: osho-ecs-cluster
+          ServiceName: osho-ecs-service
+      ServiceRoleArn: arn:aws:iam::123456789012:role/osho-codedeploy
+      ## This is not supported by the Cloudformation right now
+      BlueGreenDeploymentConfiguration:
+        DeploymentReadyOption:
+          ActionOnTimeout: STOP_DEPLOYMENT
+          WaitTimeInMinutes: '10'
+        TerminateBlueInstancesOnDeploymentSuccess:
+          Action: TERMINATE
+          TerminationWaitTimeInMinutes: '15'
+      LoadBalancerInfo:
+        TargetGroupPairInfoList:
+          -
+            TargetGroups:
+              - Name: osho-Targe-41657SP4W7LP
+              - Name: osho-Targe-V7X8FJ8H9IA9
+            ProdTrafficRoute:
+              ListenerArns:
+                - arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/osho-LoadB-1JQEJL8NAAQX/578141fef28740fa/820d8ce9ab3e6e62
+            TestTrafficRoute:
+              ListenerArns:
+                - arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/osho-LoadB-1JQEJL8NAAQX/578141fef28740fa/1d4fbf67ce5bd09f
+    #+END_SRC

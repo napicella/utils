@@ -1,0 +1,60 @@
+{
+    "RequestType": "Update",
+    "ResponseURL": "http://pre-signed-S3-url-for-response",
+    "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/MyStack/guid",
+    "RequestId": "unique id for this create request",
+    "ResourceType": "Custom::TestResource",
+    "LogicalResourceId": "MyTestResource",
+    "PhysicalResourceID": "sdfkasfkashkfd",
+    "ResourceProperties": {
+	"StackName": "MyStack",
+	"ClientToken" : "laksdfjsld",
+	"ApplicationName": "osho-codedeploy",
+	"DeploymentGroupName": "osho-codedeploy-dg-local",
+	"DeploymentStyle": {
+	    "DeploymentType": "BLUE_GREEN",
+	    "DeploymentOption": "WITH_TRAFFIC_CONTROL"
+	},
+	"EcsServices": [
+	    {
+		"ClusterName": "osho-cluster",
+		"ServiceName": "osho-service"
+	    }
+	],
+	"ServiceRoleArn": "arn:aws:iam::123456789012:role/osho-codedeploy",
+	"BlueGreenDeploymentConfiguration": {
+	    "DeploymentReadyOption": {
+		"ActionOnTimeout": "STOP_DEPLOYMENT",
+		"WaitTimeInMinutes": "10"
+	    },
+	    "TerminateBlueInstancesOnDeploymentSuccess": {
+		"Action": "TERMINATE",
+		"TerminationWaitTimeInMinutes": "15"
+	    }
+	},
+	"LoadBalancerInfo": {
+	    "TargetGroupPairInfoList": [
+		{
+		    "TargetGroups": [
+			{
+			    "Name": "osho-Targe-41657SP4W7LP"
+			},
+			{
+			    "Name": "osho-Targe-V7X8FJ8H9IA9"
+			}
+		    ],
+		    "ProdTrafficRoute": {
+			"ListenerArns": [
+			    "arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/osho-LoadB-1JQEJL8NAAQX/578141fef28740fa/820d8ce9ab3e6e62"
+			]
+		    },
+		    "TestTrafficRoute": {
+			"ListenerArns": [
+			    "arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/osho-LoadB-1JQEJL8NAAQX/578141fef28740fa/1d4fbf67ce5bd09f"
+			]
+		    }
+		}
+	    ]
+	}
+    }
+}
