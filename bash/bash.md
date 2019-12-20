@@ -34,13 +34,16 @@ my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ```
 It will work as long as the last component of the path used to find the script 
 is not a symlink (directory links are OK).
+### Simple http server based on nc
+```bash
+#!/bin/bash
+while true; do printf 'HTTP/1.1 200 OK\n\n%s' "$(cat index.html)" | nc -l 5555; done
+```
 ### CLI - Simplistic interactive filtering tool
 https://github.com/peco/peco  
 __Example:__ Search file, select it and cat it
 ```bash
 find -name '*.java' | peco | xargs cat
 ```
-
-
 
 
