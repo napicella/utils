@@ -23,10 +23,17 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ChangeLogTable
       Events:
+        Root:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+            RestApiId:
+              Ref: MarkdownApi      
         AnyRequest:
           Type: Api
           Properties:
-            Path: /*
+            Path: /{proxy+}
             Method: ANY
             RestApiId:
               Ref: MarkdownApi
