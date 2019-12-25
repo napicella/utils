@@ -24,10 +24,17 @@ Resources:
       Policies:
         - AmazonS3FullAccess
       Events:
+        Root:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+            RestApiId:
+              Ref: UsbStickApiUrl      
         AnyRequest:
           Type: Api
           Properties:
-            Path: /*
+            Path: /{proxy+}
             Method: ANY
             RestApiId:
               Ref: UsbStickApiUrl
