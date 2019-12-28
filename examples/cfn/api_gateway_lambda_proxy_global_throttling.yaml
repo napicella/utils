@@ -27,17 +27,10 @@ Resources:
         Root:
           Type: Api
           Properties:
-            Path: /
+            Path: /*
             Method: ANY
             RestApiId:
               Ref: UsbStickApiUrl      
-        AnyRequest:
-          Type: Api
-          Properties:
-            Path: /{proxy+}
-            Method: ANY
-            RestApiId:
-              Ref: UsbStickApiUrl
 
   UsbStickApiUrl:
       Type: AWS::Serverless::Api

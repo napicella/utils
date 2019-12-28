@@ -26,17 +26,10 @@ Resources:
         Root:
           Type: Api
           Properties:
-            Path: /
+            Path: /*
             Method: ANY
             RestApiId:
               Ref: MarkdownApi      
-        AnyRequest:
-          Type: Api
-          Properties:
-            Path: /{proxy+}
-            Method: ANY
-            RestApiId:
-              Ref: MarkdownApi
 
   MarkdownApi:
     Type: AWS::Serverless::Api
