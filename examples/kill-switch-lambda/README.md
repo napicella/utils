@@ -7,5 +7,9 @@ configuration to throttle all the requests.
 It allows to expose a public endpoint for a live demo, while giving you the peace
 of mind that in case of abuse, the api will kill the requests keeping the cost very low.
 This is possible thanks to API gateway cost model: throttle requested are not
-considered in the billing :)
+considered in the billing :)  
+
+See:  
+https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-pricing.html  
+___API Gateway-throttled requests are not charged when the request rate or burst rate exceeds the preconfigured limits.___
 
