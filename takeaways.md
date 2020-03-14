@@ -16,7 +16,8 @@
       Action: lambda:InvokeFunction
       FunctionName: !Ref CustomAuthorizerFunction
       Principal: apigateway.amazonaws.com
-
+- API gateway timeout hard limit is 30 seconds. A lambda with timeout grater than 30 seconds does
+  not make sense in combination with API Gateway
 
 ### ECS/Fargate with SSM 
 aws --region eu-central-1 ssm start-session --target <cluster Name>_<task ID>_<container runtime ID>
