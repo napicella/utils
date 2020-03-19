@@ -1,6 +1,8 @@
 ### API Gateway and Lambda
 - sam logs --name Lambda-name --tail
   aws lambda list-functions --region us-east-1 --query 'Functions[].FunctionName' --output text
+- to remove the log stream from the sam logs  
+  sam logs --name Lambda-name --tail | awk {'first = $1; $1=""; print $0'}
 - https://stackoverflow.com/questions/50331588/aws-api-gateway-custom-authorizer-strange-showing-error
 - Use swagger for everything in the CFN template instead of the Events property of AWS::Serverless::Function, much better documented and friendly!
 - Explicitely add permission to API gateway to call your lambda (this should ve been done by SAM behind the scene for you)
