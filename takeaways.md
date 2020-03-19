@@ -38,3 +38,61 @@ You need to use the AWS Cli, because CloudFormation does not support this yet:
 aws ecs put-cluster-capacity-providers --cluster WebServiceExampleCluster --capacity-providers FARGATE --default-capacity-provider-strategy capacityProvider=FARGATE,weight=1
 ```
 
+### XRAYS
+
+__Takeaway 1__
+XRay allows to build a latency map for a request.
+The number in the circle is the time between the moment the request entered the node and the one in which it exited.
+By clicking on the edge, you get the time for the request to reach the next node. Notice that this measure is only accurate if the next node is instrumented with XRay, otherwise it's an estimate computed on the caller side.
+
+![AWS XRay service map](https://dev-to-uploads.s3.amazonaws.com/i/8oe7d3lkju833shzuoqt.png)
+
+__Takeaway 2__
+Dropping in XRay in an existing application is easy, just wrap the client.
+	
+Instrumenting http calls made via an http client:
+```golang
+client := xray.Client(&http.Client{})
+req, _ := http.NewRequest(http.MethodGet, "...", nil)
+res, _ := client.Do(req.WithContext(r.Context()))
+```
+
+Instrumenting calls to AWS Services:
+```golang
+// DynamoDB example
+dynamoDbSvc := dynamodb.New(sess)
+xray.AWS(dynamoDbSvc.Client)
+```
+
+__Takeaway 3__
+Using XRay in a Lambda with Golang requires a XRay libray version greater or equal to v1. This is important, otherwise you will be presented with a cryptic error message at runtime!
+```
+go get –u github.com/aws/aws-xray-sdk-go@v1.0.0-rc.14
+```
+
+__Takeaway 4__
+You need to pass the context to each call you make. In the following snippet, notice the _PutItemWithContext_ call instead of _PutItem_:
+```golang
+func handleRequest(
+   ctx context.Context, request events.ALBTargetGroupRequest) 
+  (events.ALBTargetGroupResponse, error) {
+...
+_, e = dynamoDbSvc.PutItemWithContext(ctx, &dynamodb.PutItemInput{ 
+   Item:  av,  
+   TableName: aws.String(tableName),
+   ConditionExpression: aws.String("attribute_not_exists(wid)"),
+})
+```
+If you are running in a Lambda, the context is what you receive from the Lambda invocation. Otherwise you need to create a new Context.
+
+If you get an error like:
+```
+failed to begin subsegment
+named 'dynamo': segment cannot be found.
+```
+Then you likely forgot to pass a context to the request.
+
+__Takeaway 5__
+Many services integrate with XRay, for example API Gateway.
+If you enable XRay for API Gateway via console or CloudFormation you need to manually trigger a deployment. Otherwise you'll get UNAUTHORIZED from API Gateway!
+
