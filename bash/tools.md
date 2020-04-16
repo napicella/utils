@@ -1,4 +1,3 @@
-## Bash
 ### syntax checker - shellcheck
 https://www.shellcheck.net/
 ### tests(hopefully I can use a real language) - bats
@@ -45,5 +44,6 @@ __Example:__ Search file, select it and cat it
 ```bash
 find -name '*.java' | peco | xargs cat
 ```
-
+### Peek
+Simple animated GIF screen recorder 
 
