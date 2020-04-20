@@ -44,6 +44,6 @@ __Example:__ Search file, select it and cat it
 ```bash
 find -name '*.java' | peco | xargs cat
 ```
-### Peek
-Simple animated GIF screen recorder 
+### Peek - Simple animated GIF screen recorder 
+https://github.com/phw/peek
 
