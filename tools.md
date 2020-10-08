@@ -1,28 +1,55 @@
-### syntax checker - shellcheck
-https://www.shellcheck.net/
-### tests(hopefully I can use a real language) - bats
-https://github.com/sstephenson/bats
-### CLI - simplified man page - tldr
+### tldr - CLI - simplified man page
 https://github.com/tldr-pages/tldr
-### CLI - faster navigation of directories - autojump
+
+### autojump - CLI - faster navigation of directories - 
 https://www.linode.com/docs/tools-reference/tools/faster-file-navigation-with-autojump/
-### CLI - Html preview in the terminal - w3m
+
+### w3m - CLI - Html preview in the terminal
 ```bash
 sudo yum install w3m -y
 w3m -dump /some/path/file.html
 ```
 Quite usefull to visualize html based report, like checkstyle, etc, on a remote host
-### pyenv
+
+### img2pdf - CLI - Images to pdf
+https://gitlab.mister-muffin.de/josch/img2pdf
+```
+img2pdf *.jpf --output docs.pdf
+```
+
+### peco - CLI - Simplistic interactive filtering tool
+https://github.com/peco/peco  
+__Example:__ Search file, select it and cat it
+```bash
+find -name '*.java' | peco | xargs cat
+```
+
+### pyenv - Python version manager
 See https://github.com/pyenv/pyenv  
 and its installer: https://github.com/pyenv/pyenv-installer
-### NVM
+
+### nvm - Node version manager
 See https://github.com/nvm-sh/nvm  
 Installation instructions here: https://github.com/nvm-sh/nvm#installation-and-update
-### RVM - https://rvm.io/
+
+### rvm - Ruby version manager
+See https://rvm.io/
 ```bash
 gpg2 --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 curl -sSL https://get.rvm.io | bash -s stable
 ```
+### sdkman - Java (and other) version manager
+https://sdkman.io/
+
+### peek - Simple animated GIF screen recorder 
+https://github.com/phw/peek
+
+### shellcheck - syntax checker
+https://www.shellcheck.net/
+
+### bats - Writing tests for bash scripts
+https://github.com/sstephenson/bats
+
 ### Run previous command with sudo
 ```bash
 alias please="sudo $(fc -ln -1)"
@@ -33,17 +60,14 @@ my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ```
 It will work as long as the last component of the path used to find the script 
 is not a symlink (directory links are OK).
+
 ### Simple http server based on nc
 ```bash
 #!/bin/bash
 while true; do printf 'HTTP/1.1 200 OK\n\n%s' "$(cat index.html)" | nc -l 5555; done
 ```
-### CLI - Simplistic interactive filtering tool
-https://github.com/peco/peco  
-__Example:__ Search file, select it and cat it
-```bash
-find -name '*.java' | peco | xargs cat
-```
-### Peek - Simple animated GIF screen recorder 
-https://github.com/phw/peek
+
+
+
+
 
