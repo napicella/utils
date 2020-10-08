@@ -17,6 +17,12 @@ https://gitlab.mister-muffin.de/josch/img2pdf
 img2pdf *.jpf --output docs.pdf
 ```
 
+### awslogs - CLI - Get AWS lambda logs in your terminal
+https://github.com/jorgebastida/awslogs
+```
+awslogs get /aws/lambda/SomeFunction ALL --watch
+```
+
 ### peco - CLI - Simplistic interactive filtering tool
 https://github.com/peco/peco  
 __Example:__ Search file, select it and cat it
