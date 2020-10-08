@@ -1,13 +1,9 @@
 ### API Gateway and Lambda
-- sam logs --name Lambda-name --tail
-  aws lambda list-functions --region us-east-1 --query 'Functions[].FunctionName' --output text
-- to remove the log stream from the sam logs  
-  sam logs --name Lambda-name --tail | awk {'first = $1; $1=""; print $0'}
 - https://stackoverflow.com/questions/50331588/aws-api-gateway-custom-authorizer-strange-showing-error
 - Use swagger for everything in the CFN template instead of the Events property of AWS::Serverless::Function, much better documented and friendly!
 - Explicitely add permission to API gateway to call your lambda (this should ve been done by SAM behind the scene for you)
   Current workaround needed for error: "Execution failed due to configuration error: Invalid permissions on Lambda function". 
-  If you get this error (or a similar permission denied message) even when you try to test the API Gateway from the AWS     console than odds are that you are impacted by a bug in SAM that does not appear to have been fixed (note that it also     happens with CDK, which might imply that the problem is in Cloudformation or API Gateway). See https://github.com/awslabs/serverless-application-model/issues/59  
+  If you get this error (or a similar permission denied message) even when you try to test the API Gateway from the AWS console than odds are that you are impacted by a bug in SAM that does not appear to have been fixed (note that it also happens with CDK, which might imply that the problem is in Cloudformation or API Gateway). See https://github.com/awslabs/serverless-application-model/issues/59  
   As mentioned, the solution is to explicitely define permissions to invoke the Lambda Function.
   ```
   ConfigLambdaPermission:
