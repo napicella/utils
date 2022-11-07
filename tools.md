@@ -30,7 +30,7 @@ __Example:__ Search file, select it and cat it
 find -name '*.java' | peco | xargs cat
 ```
 
-### fzf - CLI Interactive finder
+### fzf - CLI - Interactive finder
 https://github.com/junegunn/fzf#usage
 Similar to peco but more customazible. Can work as quick way to build interactive menu/selection in bash
 ```
