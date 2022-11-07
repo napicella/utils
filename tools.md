@@ -65,7 +65,7 @@ https://github.com/sstephenson/bats
 
 ### Run previous command with sudo
 ```bash
-alias please="sudo $(fc -ln -1)"
+alias please="sudo \$(fc -ln -1)"
 ```
 ### Get the source directory of a bash script from within the script itself
 ```bash
