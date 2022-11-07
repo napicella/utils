@@ -31,7 +31,7 @@ find -name '*.java' | peco | xargs cat
 ```
 
 ### fzf - CLI - Interactive finder
-https://github.com/junegunn/fzf#usage
+https://github.com/junegunn/fzf#usage  
 Similar to peco but more customazible. Can work as quick way to build interactive menu/selection in bash
 ```
 printf "item-1\nitem2\nitem3\n" | fzf --height 5
