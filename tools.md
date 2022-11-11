@@ -37,6 +37,17 @@ Similar to peco but more customazible. Can work as quick way to build interactiv
 printf "item-1\nitem2\nitem3\n" | fzf --height 5
 ```
 
+### thefuck - CLI - Corrects errors in previous console commands
+See https://github.com/nvbn/thefuck  
+```bash
+> ls /root/
+ls: cannot open directory '/root/': Permission denied
+
+> fuck
+sudo ls --color=auto /root/ [enter/↑/↓/ctrl+c]
+[sudo] password for user: 
+```
+
 ### pyenv - Python version manager
 See https://github.com/pyenv/pyenv  
 and its installer: https://github.com/pyenv/pyenv-installer
