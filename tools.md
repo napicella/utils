@@ -34,8 +34,25 @@ find -name '*.java' | peco | xargs cat
 https://github.com/junegunn/fzf#usage  
 Similar to peco but more customazible. Can work as quick way to build interactive menu/selection in bash
 ```
-printf "item-1\nitem2\nitem3\n" | fzf --height 5
+# fzf cd autocompletion
+# usage: f
+function f() {
+	x=$(ls -a | fzf -i --height ~30 --border sharp)
+	if [[ -d $x ]]; then
+		cd $x
+		f
+	elif [[ -f $x ]]; then
+		o $x
+	else
+	  # invalid, i.e. empty, etc. do nothing
+	  :
+	fi
+}
 ```
+
+Also worth installing the fzf-tab-completion, see:  
+https://github.com/lincheney/fzf-tab-completion
+
 
 ### thefuck - CLI - Corrects errors in previous console commands
 See https://github.com/nvbn/thefuck  
