@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "aws-lambda-router": "^0.6.1",
-    "aws-sdk": "^2.437.0",
+    "aws-sdk": "^2.1692.0",
     "showdown": "^1.9.1"
   }
 }
